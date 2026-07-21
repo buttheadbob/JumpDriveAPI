@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>avaness.JumpDriveAPI</RootNamespace>
     <AssemblyName>JumpDriveAPI</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
@@ -103,19 +103,17 @@
   <ItemGroup />
   <ItemGroup>
     <Content Include="Workshop\metadata.mod" />
+    <Content Include="Workshop\modinfo.sbmi" />
     <Content Include="Workshop\thumb.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Workshop\modinfo.sbmi" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>cd /D $(ProjectDir)
-mkdir "Workshop"
-mkdir "%25Appdata%25\SpaceEngineers\Mods\$(ProjectName)\Data\Scripts\$(ProjectName)"
-rclone sync "$(ProjectDir)\" "%25Appdata%25\SpaceEngineers\Mods\$(ProjectName)\Data\Scripts\$(ProjectName)" --filter "- obj/**" --filter "- bin/**" --filter "- **/AssemblyInfo.cs" --filter "+ **.cs" --filter "- *" -v
-rclone sync "$(ProjectDir)\Workshop" "%25Appdata%25\SpaceEngineers\Mods\$(ProjectName)" --exclude "**.cs" -v
-</PostBuildEvent>
+    <PostBuildEvent>
+if not exist "%AppData%\SpaceEngineers\Mods\$(ProjectName)\Data\Scripts\$(ProjectName)\" mkdir "%AppData%\SpaceEngineers\Mods\$(ProjectName)\Data\Scripts\$(ProjectName)"
+xcopy /Y /S "$(ProjectDir)*.cs" "%AppData%\SpaceEngineers\Mods\$(ProjectName)\Data\Scripts\$(ProjectName)\"
+xcopy /Y /S "$(ProjectDir)Workshop\*" "%AppData%\SpaceEngineers\Mods\$(ProjectName)\"
+del "%AppData%\SpaceEngineers\Mods\$(ProjectName)\Data\Scripts\$(ProjectName)\Properties\AssemblyInfo.cs" 2&gt;nul
+    </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <LangVersion>6</LangVersion>

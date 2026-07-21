@@ -1,6 +1,7 @@
 ﻿using Sandbox.Common.ObjectBuilders;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Gui;
+using Sandbox.Game.World;
 using Sandbox.ModAPI;
 using Sandbox.ModAPI.Interfaces.Terminal;
 using System;
@@ -19,25 +20,25 @@ namespace avaness.JumpDriveAPI
     [MyEntityComponentDescriptor(typeof(MyObjectBuilder_JumpDrive), false)]
     public class MyJumpDriveLogic : MyGameLogicComponent
     {
-        private IMyJumpDrive block;
-        private Vector3D? target;
-        private static bool controls;
+        private IMyJumpDrive _block;
+        private Vector3D? _target;
+        private static bool _controls;
 
         public override void Init(MyObjectBuilder_EntityBase objectBuilder)
         {
-            block = (IMyJumpDrive)Entity;
+            _block = (IMyJumpDrive)Entity;
             NeedsUpdate = MyEntityUpdateEnum.BEFORE_NEXT_FRAME;
         }
 
         public override void UpdateOnceBeforeFrame()
         {
-            if (block.CubeGrid?.Physics == null) // ignore projected and other non-physical grids
+            if (_block.CubeGrid?.Physics == null) // ignore projected and other non-physical grids
                 return;
 
-            if(!controls)
+            if(!_controls)
             {
                 CreateControls();
-                controls = true;
+                _controls = true;
             }
         }
 
@@ -92,7 +93,7 @@ namespace avaness.JumpDriveAPI
                 return;
 
             MyJumpDriveLogic logic = block.GameLogic.GetAs<MyJumpDriveLogic>();
-            if (logic == null || !logic.target.HasValue)
+            if (logic == null || !logic._target.HasValue)
                 return;
 
             IMyGridJumpDriveSystem jumpSystem = block.CubeGrid?.JumpSystem;
@@ -103,7 +104,7 @@ namespace avaness.JumpDriveAPI
             if (jumpDrive.Status != Sandbox.ModAPI.Ingame.MyJumpDriveStatus.Ready)
                 return;
 
-            Vector3D target = logic.target.Value;
+            Vector3D target = logic._target.Value;
             if(logic.IsJumpValid(ref target))
                 jumpSystem.Jump(target, block.OwnerId);
         }
@@ -114,14 +115,14 @@ namespace avaness.JumpDriveAPI
             if (logic == null)
                 return;
 
-            logic.target = pos;
+            logic._target = pos;
         }
 
         private bool IsJumpValid(ref Vector3D jumpTarget)
         {
-            IMyCubeGrid grid = block.CubeGrid;
+            IMyCubeGrid grid = _block.CubeGrid;
             IMyGridJumpDriveSystem jumpSystem = grid.JumpSystem;
-            long userId = block.OwnerId;
+            long userId = _block.OwnerId;
             Vector3D gridPos = grid.WorldMatrix.Translation;
 
             // Check if grid is immovable
@@ -133,7 +134,7 @@ namespace avaness.JumpDriveAPI
                 return false;
 
             // Check if the jump is within the world size
-            if(!MyEntities.IsInsideWorld(jumpTarget))
+            if(!MySession.IsInsideWorld(jumpTarget))
                 return false;
 
             // Check if a planet is in the way
@@ -166,7 +167,7 @@ namespace avaness.JumpDriveAPI
         private IMyEntity GetIntersectionWithLine(Vector3D start, Vector3D end)
         {
             LineD line = new LineD(start, end);
-            VRage.Game.Models.MyIntersectionResultLineTriangleEx? intersectionWithLine = MyEntities.GetIntersectionWithLine(ref line, (MyEntity)block.CubeGrid, null, ignoreChildren: true, ignoreFloatingObjects: true, ignoreHandWeapons: true, ignoreObjectsWithoutPhysics: false, ignoreSubgridsOfIgnoredEntities: true);
+            VRage.Game.Models.MyIntersectionResultLineTriangleEx? intersectionWithLine = MyEntities.GetIntersectionWithLine(ref line, (MyEntity)_block.CubeGrid, null, ignoreChildren: true, ignoreFloatingObjects: true, ignoreHandWeapons: true, ignoreObjectsWithoutPhysics: false, ignoreSubgridsOfIgnoredEntities: true);
 
             if (!intersectionWithLine.HasValue)
                 return null;
@@ -191,7 +192,7 @@ namespace avaness.JumpDriveAPI
             if (logic == null)
                 return null;
 
-            return logic.target;
+            return logic._target;
         }
 
         private static Vector3D? GetRealJumpTarget(IMyTerminalBlock block)
