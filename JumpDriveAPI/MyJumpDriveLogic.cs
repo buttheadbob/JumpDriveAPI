@@ -133,9 +133,10 @@ namespace avaness.JumpDriveAPI
             if (IsWithinGravity(jumpTarget) || IsWithinGravity(gridPos))
                 return false;
 
-            // Check if the jump is within the world size
-            if(!MySession.IsInsideWorld(jumpTarget))
-                return false;
+	            // Check if the jump is within the world size
+	            BoundingBoxD? worldBounds = MyAPIGateway.Session?.WorldBoundaries;
+	            if(worldBounds.HasValue && worldBounds.Value.Contains(jumpTarget) != ContainmentType.Contains)
+	                return false;
 
             // Check if a planet is in the way
             IMyEntity intersection = GetIntersectionWithLine(gridPos, jumpTarget);
