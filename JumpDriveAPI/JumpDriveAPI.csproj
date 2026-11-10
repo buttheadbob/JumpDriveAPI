@@ -97,11 +97,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="JumpDriveApiSession.cs" />
     <Compile Include="MyJumpDriveLogic.cs" />
+    <Compile Include="MyJumpDriveLogic.Controls.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Content Include="Workshop\Data\EntityComponents.sbc" />
     <Content Include="Workshop\metadata.mod" />
     <Content Include="Workshop\modinfo.sbmi" />
     <Content Include="Workshop\thumb.jpg" />
@@ -109,10 +112,12 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
-if not exist "%AppData%\SpaceEngineers\Mods\$(ProjectName)\Data\Scripts\$(ProjectName)\" mkdir "%AppData%\SpaceEngineers\Mods\$(ProjectName)\Data\Scripts\$(ProjectName)"
-xcopy /Y /S "$(ProjectDir)*.cs" "%AppData%\SpaceEngineers\Mods\$(ProjectName)\Data\Scripts\$(ProjectName)\"
-xcopy /Y /S "$(ProjectDir)Workshop\*" "%AppData%\SpaceEngineers\Mods\$(ProjectName)\"
-del "%AppData%\SpaceEngineers\Mods\$(ProjectName)\Data\Scripts\$(ProjectName)\Properties\AssemblyInfo.cs" 2&gt;nul
+set "ModDir=%AppData%\SpaceEngineers\Mods\$(ProjectName)"
+if exist "%ModDir%\Data\Scripts\$(ProjectName)\" rmdir /S /Q "%ModDir%\Data\Scripts\$(ProjectName)"
+mkdir "%ModDir%\Data\Scripts\$(ProjectName)"
+rem Only the mod's own source files: no /S, so nothing from obj\ or Properties\ is copied.
+xcopy /Y "$(ProjectDir)*.cs" "%ModDir%\Data\Scripts\$(ProjectName)\"
+xcopy /Y /S "$(ProjectDir)Workshop\*" "%ModDir%\"
     </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>

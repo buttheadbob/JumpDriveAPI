@@ -48,4 +48,8 @@
     <Compile Include="Program.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <!-- The game compiles scripts as C# 6, so the IDE should flag anything newer. -->
+    <LangVersion>6</LangVersion>
+  </PropertyGroup>
 </Project>
