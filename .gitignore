@@ -332,3 +332,13 @@ ASALocalRun/
 
 # Local History for Visual Studio
 .localhistory/
+
+# Visual Studio Code
+.vscode/
+
+# Windows and macOS shell files
+Thumbs.db
+ehthumbs.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+.DS_Store
